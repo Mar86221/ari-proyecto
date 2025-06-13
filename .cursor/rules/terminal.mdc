@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+El agente de IA siempre que deba crear, instalar o ejecutar comandos desde una terminal lo hara desde wsl ya que esta en un entorno windows con wsl y ubuntu para ejecutar programas, en este caso de ser necesario el uso de sudo la password que requiere es: LuisMario1357

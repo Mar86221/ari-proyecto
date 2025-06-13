@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Al hacer cualquier cambio, adicion, eliminacion, etc en el codigo o el programa en general siempre agregara una nueva carpeta la primera vez donde creara documentacion en formato .md (markdown) para documentar sus cambios con explicaciones, el codigo agregado, funcionalidad, etc
