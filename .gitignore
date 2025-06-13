@@ -1,0 +1,21 @@
+# Ignorar reglas y archivos de Cursor
+.cursor/
+
+# Ignorar binarios y ejecutables
+/bin/
+*.class
+*.jar
+
+# Ignorar archivos temporales y de sistema
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Ignorar archivos de Maven
+/target/
+
+# Ignorar archivos de configuración de IDE
+*.iml
+.idea/
+.vscode/ 
