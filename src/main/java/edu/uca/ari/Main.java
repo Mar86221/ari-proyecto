@@ -97,6 +97,12 @@ public class Main extends JFrame {
                 "Archivos de texto/XML/JSON", "txt", "xml", "json"));
             if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
                 destinationFile = fileChooser.getSelectedFile();
+                String name = destinationFile.getName().toLowerCase();
+                if (!(name.endsWith(".txt") || name.endsWith(".xml") || name.endsWith(".json"))) {
+                    JOptionPane.showMessageDialog(this,
+                        "Recomendación: Usa la extensión .xml, .json o .txt según el formato para evitar problemas de compatibilidad.",
+                        "Sugerencia de extensión", JOptionPane.INFORMATION_MESSAGE);
+                }
             }
         });
 
