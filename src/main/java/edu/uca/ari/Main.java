@@ -173,18 +173,24 @@ public class Main extends JFrame {
 
                 VigenereCipher cipher = new VigenereCipher(key);
                 FormatConverter converter;
-                
-                if (sourceFile.getName().endsWith(".xml")) {
+                String fileName = sourceFile.getName().toLowerCase();
+                if (fileName.endsWith(".xml")) {
                     converter = FormatConverter.fromXml(sourceText);
-                } else if (sourceFile.getName().endsWith(".json")) {
+                } else if (fileName.endsWith(".json")) {
                     converter = FormatConverter.fromJson(sourceText);
                 } else {
-                    throw new IllegalArgumentException("Formato de archivo no soportado");
+                    // Detección por contenido
+                    String trimmed = sourceText.trim();
+                    if (trimmed.startsWith("<")) {
+                        converter = FormatConverter.fromXml(sourceText);
+                    } else if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+                        converter = FormatConverter.fromJson(sourceText);
+                    } else {
+                        throw new IllegalArgumentException("Formato de archivo no soportado");
+                    }
                 }
-                
                 String textResult = converter.toText(delimiter, cipher);
                 resultTextArea.setText(textResult);
-                
                 if (destinationFile != null) {
                     java.nio.file.Files.write(destinationFile.toPath(), textResult.getBytes());
                 }

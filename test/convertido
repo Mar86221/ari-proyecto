@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<clientes>
+    <cliente>
+        <documento>12345678</documento>
+        <nombres>Juan</nombres>
+        <apellidos>Pérez</apellidos>
+        <tarjeta>¡ ¥£¡¥§¦¥</tarjeta>
+        <tipo>VIP</tipo>
+        <telefono>555-1234</telefono>
+        <poligono type="Point" ubicacion="13.692300,-89.218400">
+            <latitud>13.6923</latitud>
+            <longitud>-89.2184</longitud>
+        </poligono>
+    </cliente>
+    <cliente>
+        <documento>87654321</documento>
+        <nombres>María</nombres>
+        <apellidos>García</apellidos>
+        <tarjeta>¡¤  ¬ª§ </tarjeta>
+        <tipo>Regular</tipo>
+        <telefono>555-5678</telefono>
+        <poligono type="Point" ubicacion="13.694500,-89.219900">
+            <latitud>13.6945</latitud>
+            <longitud>-89.2199</longitud>
+        </poligono>
+    </cliente>
+    <cliente>
+        <documento>45678912</documento>
+        <nombres>Carlos</nombres>
+        <apellidos>López</apellidos>
+        <tarjeta>¤§¢ £¥­ª£</tarjeta>
+        <tipo>Premium</tipo>
+        <telefono>555-9012</telefono>
+        <poligono type="Point" ubicacion="13.696700,-89.221400">
+            <latitud>13.6967</latitud>
+            <longitud>-89.2214</longitud>
+        </poligono>
+    </cliente>
+    <cliente>
+        <documento>78912345</documento>
+        <nombres>Ana</nombres>
+        <apellidos>Martínez</apellidos>
+        <tarjeta>¤¡£¨¨ª©¨</tarjeta>
+        <tipo>VIP</tipo>
+        <telefono>555-3456</telefono>
+        <poligono type="Point" ubicacion="13.698900,-89.222900">
+            <latitud>13.6989</latitud>
+            <longitud>-89.2229</longitud>
+        </poligono>
+    </cliente>
+    <cliente>
+        <documento>32165498</documento>
+        <nombres>Pedro</nombres>
+        <apellidos>Rodríguez</apellidos>
+        <tarjeta>¢§¤¡«­¬¡</tarjeta>
+        <tipo>Regular</tipo>
+        <telefono>555-7890</telefono>
+        <poligono type="Point" ubicacion="13.701100,-89.224400">
+            <latitud>13.7011</latitud>
+            <longitud>-89.2244</longitud>
+        </poligono>
+    </cliente>
+</clientes>
