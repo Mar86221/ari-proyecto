@@ -123,3 +123,6 @@ _(Mismos casos y resultados que para XML)_
 - Clave incorrecta al descifrar: campo ilegible.
 - Advertencia al guardar sin extensión.
 
+---
+
+
