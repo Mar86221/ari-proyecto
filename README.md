@@ -1,9 +1,9 @@
 # Proyecto de Administración de Riesgos Informáticos - Parte I
 
 ## Integrates
-  Luis Mario Valencia Peña
-  Duglas Fernando Pineda Fuentes
-  Jose Everth Martinez Benavides
+- Luis Mario Valencia Peña
+- Duglas Fernando Pineda Fuentes
+- Jose Everth Martinez Benavides
   
 ## Descripción
 Este proyecto implementa un sistema de conversión y cifrado de datos para la gestión de información de clientes, permitiendo la transformación entre diferentes formatos (TXT, XML, JSON) con capacidades de cifrado integradas.
