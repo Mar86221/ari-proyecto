@@ -15,7 +15,8 @@ public class Main extends JFrame {
     private JButton convertToJsonButton;
     private JButton convertToTextButton;
     private JButton selectSourceButton;
-    private JButton selectDestinationButton;
+    private JButton saveResultButton;
+    private JButton verifyEncryptionButton;
     private File sourceFile;
     private File destinationFile;
 
@@ -39,8 +40,9 @@ public class Main extends JFrame {
         convertToXmlButton = new JButton("Convertir a XML");
         convertToJsonButton = new JButton("Convertir a JSON");
         convertToTextButton = new JButton("Convertir a Texto");
-        selectSourceButton = new JButton("Seleccionar Origen");
-        selectDestinationButton = new JButton("Seleccionar Destino");
+        selectSourceButton = new JButton("Seleccionar Archivo");
+        saveResultButton = new JButton("Guardar Resultado");
+        verifyEncryptionButton = new JButton("Verificar Cifrado");
 
         // Configurar layout
         setLayout(new BorderLayout());
@@ -52,7 +54,7 @@ public class Main extends JFrame {
         controlPanel.add(selectSourceButton);
         controlPanel.add(new JLabel("Clave de Cifrado:"));
         controlPanel.add(encryptionKeyField);
-        controlPanel.add(selectDestinationButton);
+        controlPanel.add(verifyEncryptionButton);
         
         // Panel central para áreas de texto
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
@@ -65,6 +67,7 @@ public class Main extends JFrame {
         buttonPanel.add(convertToXmlButton);
         buttonPanel.add(convertToJsonButton);
         buttonPanel.add(convertToTextButton);
+        buttonPanel.add(saveResultButton);
         
         // Agregar componentes al frame
         add(controlPanel, BorderLayout.NORTH);
@@ -79,29 +82,102 @@ public class Main extends JFrame {
         selectSourceButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser(new java.io.File("test"));
             fileChooser.setFileFilter(new FileNameExtensionFilter(
-                "Archivos de texto", "txt"));
+                "Todos los archivos soportados", "txt", "xml", "json"));
+            fileChooser.setDialogTitle("Seleccionar archivo a convertir");
+            
             if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 sourceFile = fileChooser.getSelectedFile();
                 try {
                     String content = new String(java.nio.file.Files.readAllBytes(sourceFile.toPath()));
                     sourceTextArea.setText(content);
+                    
+                    // Mostrar información sobre el archivo seleccionado
+                    String fileName = sourceFile.getName().toLowerCase();
+                    String fileType = "TXT";
+                    if (fileName.endsWith(".xml")) fileType = "XML";
+                    else if (fileName.endsWith(".json")) fileType = "JSON";
+                    
+                    JOptionPane.showMessageDialog(this, 
+                        String.format("Archivo %s cargado exitosamente.\n\nTipo detectado: %s\nLíneas: %d", 
+                            sourceFile.getName(), fileType, content.split("\n").length),
+                        "Archivo cargado", JOptionPane.INFORMATION_MESSAGE);
+                        
                 } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(this, "Error al leer el archivo: " + ex.getMessage());
+                    JOptionPane.showMessageDialog(this, "Error al leer el archivo: " + ex.getMessage(), 
+                        "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
 
-        selectDestinationButton.addActionListener(e -> {
+        // Nuevo listener para verificar cifrado
+        verifyEncryptionButton.addActionListener(e -> {
+            String key = encryptionKeyField.getText();
+            if (key.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Ingrese una clave para probar el cifrado", 
+                    "Clave requerida", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            String testText = "1234567890123456"; // Número de tarjeta de prueba
+            VigenereCipher cipher = new VigenereCipher(key);
+            String encrypted = cipher.encrypt(testText);
+            String decrypted = cipher.decrypt(encrypted);
+            
+            String message = String.format(
+                "Prueba de Cifrado:\n\n" +
+                "Texto original: %s\n" +
+                "Texto cifrado: %s\n" +
+                "Texto descifrado: %s\n\n" +
+                "¿El cifrado funciona? %s", 
+                testText, encrypted, decrypted, 
+                testText.equals(decrypted) ? "✅ SÍ" : "❌ NO"
+            );
+            
+            JOptionPane.showMessageDialog(this, message, "Verificación de Cifrado", 
+                JOptionPane.INFORMATION_MESSAGE);
+        });
+        
+        // Nuevo listener para guardar resultado
+        saveResultButton.addActionListener(e -> {
+            String resultText = resultTextArea.getText().trim();
+            if (resultText.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "No hay resultado para guardar. Realice una conversión primero.", 
+                    "Sin resultado", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
             JFileChooser fileChooser = new JFileChooser(new java.io.File("test"));
-            fileChooser.setFileFilter(new FileNameExtensionFilter(
-                "Archivos de texto/XML/JSON", "txt", "xml", "json"));
+            fileChooser.setDialogTitle("Guardar resultado");
+            
+            // Detectar extensión automáticamente según el contenido
+            String extension = ".txt";
+            if (resultText.trim().startsWith("<?xml") || resultText.trim().startsWith("<")) {
+                extension = ".xml";
+                fileChooser.setFileFilter(new FileNameExtensionFilter("Archivos XML", "xml"));
+            } else if (resultText.trim().startsWith("{") || resultText.trim().startsWith("[")) {
+                extension = ".json";
+                fileChooser.setFileFilter(new FileNameExtensionFilter("Archivos JSON", "json"));
+            } else {
+                fileChooser.setFileFilter(new FileNameExtensionFilter("Archivos de texto", "txt"));
+            }
+            
             if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
                 destinationFile = fileChooser.getSelectedFile();
-                String name = destinationFile.getName().toLowerCase();
-                if (!(name.endsWith(".txt") || name.endsWith(".xml") || name.endsWith(".json"))) {
-                    JOptionPane.showMessageDialog(this,
-                        "Recomendación: Usa la extensión .xml, .json o .txt según el formato para evitar problemas de compatibilidad.",
-                        "Sugerencia de extensión", JOptionPane.INFORMATION_MESSAGE);
+                String fileName = destinationFile.getName();
+                
+                // Agregar extensión automáticamente si no la tiene
+                if (!fileName.toLowerCase().endsWith(extension)) {
+                    destinationFile = new java.io.File(destinationFile.getAbsolutePath() + extension);
+                }
+                
+                try {
+                    java.nio.file.Files.write(destinationFile.toPath(), resultText.getBytes());
+                    JOptionPane.showMessageDialog(this, 
+                        "Archivo guardado exitosamente en:\n" + destinationFile.getAbsolutePath(), 
+                        "Guardado exitoso", JOptionPane.INFORMATION_MESSAGE);
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(this, "Error al guardar el archivo: " + ex.getMessage(), 
+                        "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -146,11 +222,8 @@ public class Main extends JFrame {
                 String xmlResult = converter.toXml();
                 resultTextArea.setText(xmlResult);
                 
-                if (destinationFile != null) {
-                    java.nio.file.Files.write(destinationFile.toPath(), xmlResult.getBytes());
-                    JOptionPane.showMessageDialog(this, "Archivo XML generado y guardado exitosamente en:\n" + 
-                        destinationFile.getAbsolutePath(), "Conversión exitosa", JOptionPane.INFORMATION_MESSAGE);
-                }
+                JOptionPane.showMessageDialog(this, "Conversión a XML exitosa.\nUse el botón 'Guardar Resultado' para guardar el archivo.", 
+                    "Conversión exitosa", JOptionPane.INFORMATION_MESSAGE);
                 
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, 
@@ -200,11 +273,8 @@ public class Main extends JFrame {
                 String jsonResult = converter.toJson();
                 resultTextArea.setText(jsonResult);
                 
-                if (destinationFile != null) {
-                    java.nio.file.Files.write(destinationFile.toPath(), jsonResult.getBytes());
-                    JOptionPane.showMessageDialog(this, "Archivo JSON generado y guardado exitosamente en:\n" + 
-                        destinationFile.getAbsolutePath(), "Conversión exitosa", JOptionPane.INFORMATION_MESSAGE);
-                }
+                JOptionPane.showMessageDialog(this, "Conversión a JSON exitosa.\nUse el botón 'Guardar Resultado' para guardar el archivo.", 
+                    "Conversión exitosa", JOptionPane.INFORMATION_MESSAGE);
                 
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, 
@@ -293,11 +363,8 @@ public class Main extends JFrame {
                     String textResult = converter.toText(delimiter, cipher);
                     resultTextArea.setText(textResult);
                     
-                    if (destinationFile != null) {
-                        java.nio.file.Files.write(destinationFile.toPath(), textResult.getBytes());
-                        JOptionPane.showMessageDialog(this, "Archivo convertido y guardado exitosamente en:\n" + 
-                            destinationFile.getAbsolutePath(), "Conversión exitosa", JOptionPane.INFORMATION_MESSAGE);
-                    }
+                    JOptionPane.showMessageDialog(this, "Conversión a texto exitosa.\nUse el botón 'Guardar Resultado' para guardar el archivo.", 
+                        "Conversión exitosa", JOptionPane.INFORMATION_MESSAGE);
                     
                 } catch (Exception parseEx) {
                     JOptionPane.showMessageDialog(this, 
