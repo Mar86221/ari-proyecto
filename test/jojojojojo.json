@@ -1,0 +1,68 @@
+{
+  "clientes" : [ {
+    "documento" : "12345678",
+    "nombres" : "Juan",
+    "apellidos" : "Pérez",
+    "tarjeta" : "¡£¥¡§£¡£¥",
+    "tipo" : "VIP",
+    "telefono" : "555-1234",
+    "poligono" : {
+      "type" : "Point",
+      "latitud" : 13.6923,
+      "longitud" : -89.2184,
+      "ubicacion" : "13.692300,-89.218400"
+    }
+  }, {
+    "documento" : "87654321",
+    "nombres" : "María",
+    "apellidos" : "García",
+    "tarjeta" : " ¤¢ ¨¢¦ ¤¢ ",
+    "tipo" : "Regular",
+    "telefono" : "555-5678",
+    "poligono" : {
+      "type" : "Point",
+      "latitud" : 13.6945,
+      "longitud" : -89.2199,
+      "ubicacion" : "13.694500,-89.219900"
+    }
+  }, {
+    "documento" : "45678912",
+    "nombres" : "Carlos",
+    "apellidos" : "López",
+    "tarjeta" : "£§¡¥£¡£§¡¥£",
+    "tipo" : "Premium",
+    "telefono" : "555-9012",
+    "poligono" : {
+      "type" : "Point",
+      "latitud" : 13.6967,
+      "longitud" : -89.2214,
+      "ubicacion" : "13.696700,-89.221400"
+    }
+  }, {
+    "documento" : "78912345",
+    "nombres" : "Ana",
+    "apellidos" : "Martínez",
+    "tarjeta" : "¤ ¦¢¨ ¢¤ ¦¢¨",
+    "tipo" : "VIP",
+    "telefono" : "555-3456",
+    "poligono" : {
+      "type" : "Point",
+      "latitud" : 13.6989,
+      "longitud" : -89.2229,
+      "ubicacion" : "13.698900,-89.222900"
+    }
+  }, {
+    "documento" : "32165498",
+    "nombres" : "Pedro",
+    "apellidos" : "Rodríguez",
+    "tarjeta" : "¡§£¡£¥¡§£¡",
+    "tipo" : "Regular",
+    "telefono" : "555-7890",
+    "poligono" : {
+      "type" : "Point",
+      "latitud" : 13.7011,
+      "longitud" : -89.2244,
+      "ubicacion" : "13.701100,-89.224400"
+    }
+  } ]
+}
