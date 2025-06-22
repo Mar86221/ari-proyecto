@@ -108,100 +108,207 @@ public class Main extends JFrame {
 
         convertToXmlButton.addActionListener(e -> {
             try {
-                String sourceText = sourceTextArea.getText();
+                String sourceText = sourceTextArea.getText().trim();
                 String delimiter = delimiterField.getText();
                 String key = encryptionKeyField.getText();
                 
+                // Validaciones mejoradas
+                if (sourceText.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "No hay contenido para convertir. Ingrese texto o seleccione un archivo.", 
+                        "Sin datos", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                
                 if (key.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Por favor ingrese una clave de cifrado");
+                    JOptionPane.showMessageDialog(this, "Por favor ingrese una clave de cifrado para el campo tarjeta", 
+                        "Clave requerida", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                
+                if (delimiter.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Por favor especifique un delimitador para procesar el texto", 
+                        "Delimitador requerido", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
                 VigenereCipher cipher = new VigenereCipher(key);
                 FormatConverter converter = FormatConverter.fromText(sourceText, delimiter, cipher);
-                String xmlResult = converter.toXml();
                 
+                if (converter.getClientes().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, 
+                        "No se encontraron registros válidos en el texto.\nVerifique que:\n" +
+                        "- Cada línea tenga al menos 8 campos separados por '" + delimiter + "'\n" +
+                        "- El formato sea: documento,nombres,apellidos,tarjeta,tipo,telefono,latitud,longitud", 
+                        "Sin registros válidos", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                
+                String xmlResult = converter.toXml();
                 resultTextArea.setText(xmlResult);
+                
                 if (destinationFile != null) {
                     java.nio.file.Files.write(destinationFile.toPath(), xmlResult.getBytes());
+                    JOptionPane.showMessageDialog(this, "Archivo XML generado y guardado exitosamente en:\n" + 
+                        destinationFile.getAbsolutePath(), "Conversión exitosa", JOptionPane.INFORMATION_MESSAGE);
                 }
+                
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error en la conversión: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, 
+                    "Error al convertir a XML:\n" + ex.getMessage() + 
+                    "\n\nVerifique el formato de los datos y que todos los campos numéricos sean válidos.", 
+                    "Error de conversión", JOptionPane.ERROR_MESSAGE);
             }
         });
 
         convertToJsonButton.addActionListener(e -> {
             try {
-                String sourceText = sourceTextArea.getText();
+                String sourceText = sourceTextArea.getText().trim();
                 String delimiter = delimiterField.getText();
                 String key = encryptionKeyField.getText();
                 
+                // Validaciones mejoradas
+                if (sourceText.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "No hay contenido para convertir. Ingrese texto o seleccione un archivo.", 
+                        "Sin datos", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                
                 if (key.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Por favor ingrese una clave de cifrado");
+                    JOptionPane.showMessageDialog(this, "Por favor ingrese una clave de cifrado para el campo tarjeta", 
+                        "Clave requerida", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                
+                if (delimiter.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Por favor especifique un delimitador para procesar el texto", 
+                        "Delimitador requerido", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
                 VigenereCipher cipher = new VigenereCipher(key);
                 FormatConverter converter = FormatConverter.fromText(sourceText, delimiter, cipher);
-                String jsonResult = converter.toJson();
                 
+                if (converter.getClientes().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, 
+                        "No se encontraron registros válidos en el texto.\nVerifique que:\n" +
+                        "- Cada línea tenga al menos 8 campos separados por '" + delimiter + "'\n" +
+                        "- El formato sea: documento,nombres,apellidos,tarjeta,tipo,telefono,latitud,longitud", 
+                        "Sin registros válidos", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                
+                String jsonResult = converter.toJson();
                 resultTextArea.setText(jsonResult);
+                
                 if (destinationFile != null) {
                     java.nio.file.Files.write(destinationFile.toPath(), jsonResult.getBytes());
+                    JOptionPane.showMessageDialog(this, "Archivo JSON generado y guardado exitosamente en:\n" + 
+                        destinationFile.getAbsolutePath(), "Conversión exitosa", JOptionPane.INFORMATION_MESSAGE);
                 }
+                
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error en la conversión: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, 
+                    "Error al convertir a JSON:\n" + ex.getMessage() + 
+                    "\n\nVerifique el formato de los datos y que todos los campos numéricos sean válidos.", 
+                    "Error de conversión", JOptionPane.ERROR_MESSAGE);
             }
         });
 
         convertToTextButton.addActionListener(e -> {
-            JFileChooser fileChooser = new JFileChooser(new java.io.File("test"));
-            fileChooser.setFileFilter(new FileNameExtensionFilter(
-                "Archivos XML/JSON", "xml", "json"));
-            if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-                sourceFile = fileChooser.getSelectedFile();
-                try {
-                    String content = new String(java.nio.file.Files.readAllBytes(sourceFile.toPath()));
-                    sourceTextArea.setText(content);
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(this, "Error al leer el archivo: " + ex.getMessage());
-                }
-            }
             try {
-                String sourceText = sourceTextArea.getText();
+                // Si no hay archivo fuente seleccionado, permitir seleccionar uno
+                if (sourceFile == null || sourceTextArea.getText().trim().isEmpty()) {
+                    JFileChooser fileChooser = new JFileChooser(new java.io.File("test"));
+                    fileChooser.setFileFilter(new FileNameExtensionFilter(
+                        "Archivos XML/JSON", "xml", "json"));
+                    if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+                        sourceFile = fileChooser.getSelectedFile();
+                        try {
+                            String content = new String(java.nio.file.Files.readAllBytes(sourceFile.toPath()));
+                            sourceTextArea.setText(content);
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(this, "Error al leer el archivo: " + ex.getMessage());
+                            return;
+                        }
+                    } else {
+                        return; // Usuario canceló la selección
+                    }
+                }
+
+                String sourceText = sourceTextArea.getText().trim();
                 String delimiter = delimiterField.getText();
                 String key = encryptionKeyField.getText();
                 
+                // Validaciones mejoradas
+                if (sourceText.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "No hay contenido para convertir. Seleccione un archivo primero.", 
+                        "Sin datos", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                
                 if (key.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Por favor ingrese una clave de cifrado");
+                    JOptionPane.showMessageDialog(this, "Por favor ingrese una clave de cifrado para descifrar el campo tarjeta", 
+                        "Clave requerida", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                
+                if (delimiter.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Por favor especifique un delimitador para el archivo de salida", 
+                        "Delimitador requerido", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
                 VigenereCipher cipher = new VigenereCipher(key);
                 FormatConverter converter;
-                String fileName = sourceFile.getName().toLowerCase();
-                if (fileName.endsWith(".xml")) {
-                    converter = FormatConverter.fromXml(sourceText);
-                } else if (fileName.endsWith(".json")) {
-                    converter = FormatConverter.fromJson(sourceText);
-                } else {
-                    // Detección por contenido
-                    String trimmed = sourceText.trim();
-                    if (trimmed.startsWith("<")) {
-                        converter = FormatConverter.fromXml(sourceText);
-                    } else if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
-                        converter = FormatConverter.fromJson(sourceText);
+                
+                // Detección mejorada de formato
+                try {
+                    if (sourceFile != null) {
+                        String fileName = sourceFile.getName().toLowerCase();
+                        if (fileName.endsWith(".xml")) {
+                            converter = FormatConverter.fromXml(sourceText);
+                        } else if (fileName.endsWith(".json")) {
+                            converter = FormatConverter.fromJson(sourceText);
+                        } else {
+                            // Detección por contenido si no hay extensión clara
+                            if (sourceText.startsWith("<?xml") || sourceText.startsWith("<")) {
+                                converter = FormatConverter.fromXml(sourceText);
+                            } else if (sourceText.startsWith("{") || sourceText.startsWith("[")) {
+                                converter = FormatConverter.fromJson(sourceText);
+                            } else {
+                                throw new IllegalArgumentException("El archivo no parece ser XML ni JSON válido");
+                            }
+                        }
                     } else {
-                        throw new IllegalArgumentException("Formato de archivo no soportado");
+                        // Solo detección por contenido
+                        if (sourceText.startsWith("<?xml") || sourceText.startsWith("<")) {
+                            converter = FormatConverter.fromXml(sourceText);
+                        } else if (sourceText.startsWith("{") || sourceText.startsWith("[")) {
+                            converter = FormatConverter.fromJson(sourceText);
+                        } else {
+                            throw new IllegalArgumentException("El contenido no parece ser XML ni JSON válido");
+                        }
                     }
+                    
+                    String textResult = converter.toText(delimiter, cipher);
+                    resultTextArea.setText(textResult);
+                    
+                    if (destinationFile != null) {
+                        java.nio.file.Files.write(destinationFile.toPath(), textResult.getBytes());
+                        JOptionPane.showMessageDialog(this, "Archivo convertido y guardado exitosamente en:\n" + 
+                            destinationFile.getAbsolutePath(), "Conversión exitosa", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    
+                } catch (Exception parseEx) {
+                    JOptionPane.showMessageDialog(this, 
+                        "Error al procesar el archivo:\n" + parseEx.getMessage() + 
+                        "\n\nVerifique que el archivo tenga formato XML o JSON válido y que la clave sea correcta.", 
+                        "Error de conversión", JOptionPane.ERROR_MESSAGE);
                 }
-                String textResult = converter.toText(delimiter, cipher);
-                resultTextArea.setText(textResult);
-                if (destinationFile != null) {
-                    java.nio.file.Files.write(destinationFile.toPath(), textResult.getBytes());
-                }
+                
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error en la conversión: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.getMessage(), 
+                    "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
